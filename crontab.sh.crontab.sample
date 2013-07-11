@@ -1,0 +1,3 @@
+# just a sample, please delete
+0 0 * * * echo hello world
+0 0 * * * date
