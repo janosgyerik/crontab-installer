@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 #
 # Usage: 
 # 1. Put this script somewhere in your project
