@@ -1,13 +1,18 @@
 #!/bin/sh -e
 #
-# Usage: 
+# Usage:
+#
 # 1. Put this script somewhere in your project
-# 2. Edit "$0".crontab file, it should look like this, 
+#
+# 2. Edit "$0".crontab file, it should look like this,
 #    except the # in front of the lines
-#0	*	*	*	*	stuff_you_want_to_do
-#15	*/5	*	*	*	stuff_you_want_to_do
-#*	*	1,2	*	*	and_so_on
-# 3. To install the crontab, simply run the script
+#
+#0 * * * * stuff_you_want_to_do
+#15 */5 * * * stuff_you_want_to_do
+#* * 1,2 * * and_so_on
+#
+# 3. To install the crontab, simply run this script
+#
 # 4. To remove the crontab, run ./crontab.sh --remove
 # 
 
