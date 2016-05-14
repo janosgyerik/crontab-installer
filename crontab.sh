@@ -22,7 +22,7 @@ test "$1" = --remove && mode=remove || mode=add
 
 cron_unique_label="# $PWD"
 
-crontab="$0".crontab
+crontab=$(basename "$0").crontab
 crontab_bak=$crontab.bak
 test -f $crontab || cp $crontab.sample $crontab
 
