@@ -39,7 +39,7 @@ To use this script in a project:
 - Copy `crontab.sh.crontab` to `crontab.sh.crontab.sample`,
   remove sensitive or non-portable information, add to version control
 
-- Mark `crontab.sh.crontab` ignored in version control,
+- Mark `crontab.sh.crontab` and `crontab.sh.crontab.bak` ignored in version control,
   as the crontab entries typically contain sensitive information
   or settings specific to the local environment.
   If your case is simpler, then you don't need the sample,
