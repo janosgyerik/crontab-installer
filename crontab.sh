@@ -34,7 +34,7 @@ crontab_exists() {
 if type crontab >/dev/null 2>/dev/null; then
     if test $mode = add; then
         if ! crontab_exists; then
-            crontab -l > $crontab_bak
+            crontab -l > $crontab_bak || :
             echo 'Appending to crontab:'
             cat $crontab
             crontab -l 2>/dev/null | {
