@@ -37,7 +37,13 @@ if type crontab >/dev/null 2>/dev/null; then
             crontab -l > $crontab_bak
             echo 'Appending to crontab:'
             cat $crontab
-            crontab -l 2>/dev/null | { cat; echo; echo $cron_unique_label; cat $crontab; echo; } | crontab -
+            crontab -l 2>/dev/null | {
+                cat
+                echo
+                echo $cron_unique_label
+                cat $crontab
+                echo
+            } | crontab -
         else
             echo 'Crontab entry already exists, skipping ...'
             echo
