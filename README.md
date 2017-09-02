@@ -1,18 +1,18 @@
-crontab-script
-==============
+crontab-installer
+=================
 
-A simple script to install or remove custom crontab entries.
+A simple script to install or remove a custom crontab.
 
 Here's how it works:
 
 1. Create a file `./crontab.sh.crontab` with the custom crontab of your project
 
-2. Run `./crontab.sh` to add the crontab entry, or to check if it exists
+2. Run `./crontab.sh` to add the crontab entry if it does not already exist
 
 3. Run `./crontab.sh --remove` to remove the crontab entry
 
-The script detects if the crontab entry was already added.
-It works by adding the entry in this format:
+The script detects if the crontab already exists,
+by looking for a specific format:
 
     # BLANK LINE HERE
     # $PWD
@@ -25,7 +25,7 @@ should uniquely identify the entry in the complete crontab of the user.
 This makes it possible to avoid adding an entry twice,
 and to remove the entry.
 
-This is just for your information. The script creates this format, not you.
+The script creates this format for you, you don't need to write it manually.
 You just create your crontab entry in `crontab.sh.crontab`,
 and the script will install it in the above format.
 
@@ -36,16 +36,14 @@ To use this script in a project:
 - Create `crontab.sh.crontab` as appropriate for the project,
   but don't add to version control
 
-- Copy `crontab.sh.crontab` to `crontab.sh.crontab.sample`,
-  remove sensitive or non-portable information, add to version control
+- Optionally add `crontab.sh.crontab.sample` to version control,
+  without sensitive or deployment-specific information.
 
 - Mark `crontab.sh.crontab` and `crontab.sh.crontab.bak` ignored in version control,
   as the crontab entries typically contain sensitive information
-  or settings specific to the local environment.
-  If your case is simpler, then you don't need the sample,
-  you can use this script directly, of course.
+  or settings specific to deployment.
 
 When installing your project in production,
-copy `crontab.sh.crontab.sample` to `crontab.sh.crontab`,
-and run `./crontab.sh` to install the crontab,
-`./crontab.sh --remove` to remove it.
+copy `crontab.sh.crontab.sample` to `crontab.sh.crontab` and modify as needed.
+Install the crontab by running `./crontab.sh`,
+uninstall by running `./crontab.sh --remove`.

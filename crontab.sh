@@ -16,7 +16,7 @@
 # 4. To remove the crontab, run ./crontab.sh --remove
 # 
 
-cd $(dirname "$0")
+cd "$(dirname "$0")"
 
 test "$1" = --remove && mode=remove || mode=add
 
@@ -25,6 +25,10 @@ cron_unique_label="# $PWD"
 crontab=$(basename "$0").crontab
 crontab_bak=$crontab.bak
 test -f $crontab || cp $crontab.sample $crontab
+
+msg() {
+    echo "* $@"
+}
 
 crontab_exists() {
     crontab -l 2>/dev/null | grep -x "$cron_unique_label" >/dev/null 2>/dev/null
@@ -35,27 +39,30 @@ if type crontab >/dev/null 2>/dev/null; then
     if test $mode = add; then
         if ! crontab_exists; then
             crontab -l > $crontab_bak || :
-            echo 'Appending to crontab:'
-            cat $crontab
+            msg Appending to crontab:
+            cat $crontab | {
+                echo
+                sed -e 's/^/  /'
+                echo
+            }
             crontab -l 2>/dev/null | {
                 cat
-                echo
                 echo $cron_unique_label
                 cat $crontab
                 echo
             } | crontab -
         else
-            echo 'Crontab entry already exists, skipping ...'
+            msg Crontab entry already exists, skipping ...
             echo
         fi
-        echo "To remove previously added crontab entry, run: $0 --remove"
+        msg "To remove previously added crontab entry, run: $0 --remove"
         echo
     elif test $mode = remove; then
         if crontab_exists; then
-            echo Removing crontab entry ...
+            msg Removing crontab entry ...
             crontab -l 2>/dev/null | sed -e "\?^$cron_unique_label\$?,/^\$/ d" | crontab -
         else
-            echo Crontab entry does not exist, nothing to do.
+            msg "Crontab entry does not exist, nothing to do."
         fi
     fi
 fi
