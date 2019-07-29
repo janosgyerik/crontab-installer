@@ -5,7 +5,7 @@ A simple script to install or remove a custom crontab.
 
 Here's how it works:
 
-1. Create a file `./crontab.sh.crontab` with the custom crontab of your project
+1. Create a file `./crontab.txt` with the custom crontab of your project
 
 2. Run `./crontab.sh` to add the crontab entry if it does not already exist
 
@@ -26,24 +26,24 @@ This makes it possible to avoid adding an entry twice,
 and to remove the entry.
 
 The script creates this format for you, you don't need to write it manually.
-You just create your crontab entry in `crontab.sh.crontab`,
+You just create your crontab entry in `crontab.txt`,
 and the script will install it in the above format.
 
 To use this script in a project:
 
 - Copy `crontab.sh` to your project, add to version control
 
-- Create `crontab.sh.crontab` as appropriate for the project,
+- Create `crontab.txt` as appropriate for the project,
   but don't add to version control
 
-- Optionally add `crontab.sh.crontab.sample` to version control,
+- Optionally add `crontab.txt.sample` to version control,
   without sensitive or deployment-specific information.
 
-- Mark `crontab.sh.crontab` and `crontab.sh.crontab.bak` ignored in version control,
+- Mark `crontab.txt` and `crontab.bak` ignored in version control,
   as the crontab entries typically contain sensitive information
   or settings specific to deployment.
 
 When installing your project in production,
-copy `crontab.sh.crontab.sample` to `crontab.sh.crontab` and modify as needed.
+copy `crontab.txt.sample` to `crontab.txt` and modify as needed.
 Install the crontab by running `./crontab.sh`,
 uninstall by running `./crontab.sh --remove`.

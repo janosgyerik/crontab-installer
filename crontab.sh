@@ -1,10 +1,10 @@
-#!/bin/sh -e
+#!/usr/bin/env bash
 #
 # Usage:
 #
 # 1. Put this script somewhere in your project
 #
-# 2. Edit "$0".crontab file, it should look like this,
+# 2. Edit crontab.txt file, it should look like this,
 #    except the # in front of the lines
 #
 #0 * * * * stuff_you_want_to_do
@@ -18,51 +18,107 @@
 
 cd "$(dirname "$0")"
 
-test "$1" = --remove && mode=remove || mode=add
+set -euo pipefail
 
-cron_unique_label="# $PWD"
+usage() {
+    local exitcode=0
+    if [[ $# != 0 ]]; then
+        echo "$*" >&2
+        exitcode=1
+    fi
 
-crontab=$(basename "$0").crontab
-crontab_bak=$crontab.bak
-test -f $crontab || cp $crontab.sample $crontab
+    cat << EOF
+Usage: $0 [OPTIONS]...
+
+Install or remove the crontab setting defined in crontab.txt file.
+
+Options:
+      --remove       Remove the crontab
+  -h, --help         Print this help
+
+EOF
+    exit "$exitcode"
+}
+
+fatal() {
+    echo "Error: $*" >&2
+    exit 1
+}
 
 msg() {
-    echo "* $@"
+    echo "* $*"
 }
 
 crontab_exists() {
-    crontab -l 2>/dev/null | grep -x "$cron_unique_label" >/dev/null 2>/dev/null
+    crontab -l 2>/dev/null | grep -qx "$cron_unique_label"
 }
 
-# if crontab is executable
-if type crontab >/dev/null 2>/dev/null; then
-    if test $mode = add; then
-        if ! crontab_exists; then
-            crontab -l > $crontab_bak || :
-            msg Appending to crontab:
-            cat $crontab | {
-                echo
-                sed -e 's/^/  /'
-                echo
-            }
-            crontab -l 2>/dev/null | {
-                cat
-                echo $cron_unique_label
-                cat $crontab
-                echo
-            } | crontab -
-        else
-            msg Crontab entry already exists, skipping ...
-            echo
-        fi
-        msg "To remove previously added crontab entry, run: $0 --remove"
+backup_crontab() {
+    local crontab_bak=./crontab.bak
+
+    msg "Creating backup of current crontab in $crontab_bak ..."
+    crontab -l > "$crontab_bak" || :
+}
+
+install_crontab() {
+    if crontab_exists; then
+        msg "Crontab entry already exists, skipping ..."
         echo
-    elif test $mode = remove; then
-        if crontab_exists; then
-            msg Removing crontab entry ...
-            crontab -l 2>/dev/null | sed -e "\?^$cron_unique_label\$?,/^\$/ d" | crontab -
-        else
-            msg "Crontab entry does not exist, nothing to do."
-        fi
+        msg "To remove it, run: $0 --remove"
+        echo
+        return
     fi
+
+    backup_crontab
+
+    msg "Appending to crontab:"
+    {
+        echo
+        sed -e 's/^/  /'
+        echo
+    } < "$crontab_txt"
+
+    {
+        crontab -l 2>/dev/null
+        echo "$cron_unique_label"
+        cat "$crontab_txt"
+        echo
+    } | crontab -
+
+    msg "To remove it later, run: $0 --remove"
+    echo
+}
+
+remove_crontab() {
+    if crontab_exists; then
+        backup_crontab
+        msg "Removing crontab entry ..."
+        crontab -l 2>/dev/null | sed -e "\?^$cron_unique_label\$?,/^\$/ d" | crontab -
+    else
+        msg "Crontab entry does not exist, nothing to do."
+    fi
+}
+
+type crontab &>/dev/null || fatal "it seems the crontab command does not exist (not on PATH). Abort."
+
+mode=install
+while [[ $# != 0 ]]; do
+    case $1 in
+    -h|--help) usage ;;
+    --remove) mode=remove ;;
+    -|-?*) usage "Unknown option: $1" ;;
+    *) usage "Unexpected arguments: $*" ;;
+    esac
+    shift
+done
+
+crontab_txt=./crontab.txt
+[[ -f "$crontab_txt" ]] || fatal "crontab definition file does not exist: $crontab_txt"
+
+cron_unique_label="# $PWD"
+
+if [[ "$mode" == install ]]; then
+    install_crontab
+elif [[ "$mode" == remove ]]; then
+    remove_crontab
 fi
