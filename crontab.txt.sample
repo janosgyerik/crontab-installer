@@ -1,3 +1,4 @@
-# just a sample, please delete
-0 0 * * * echo hello world
-0 0 * * * date
+0 * * * * ./backup.sh hourly
+15 0 * * * ./backup.sh daily
+20 1 7,14,21,28 * * ./backup.sh weekly
+35 1 1 * * ./backup.sh monthly
