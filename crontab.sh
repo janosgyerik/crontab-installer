@@ -60,6 +60,10 @@ backup_crontab() {
     crontab -l > "$crontab_bak" || :
 }
 
+expand_select_vars() {
+    sed -e 's?$PWD?'"$PWD"'?g'
+}
+
 install_crontab() {
     if crontab_exists; then
         msg "Crontab entry already exists, skipping ..."
@@ -74,14 +78,14 @@ install_crontab() {
     msg "Appending to crontab:"
     {
         echo
-        sed -e 's/^/  /'
+        sed -e 's/^/  /' | expand_select_vars
         echo
     } < "$crontab_txt"
 
     {
         crontab -l 2>/dev/null
         echo "$cron_unique_label"
-        cat "$crontab_txt"
+        cat "$crontab_txt" | expand_select_vars
         echo
     } | crontab -
 
